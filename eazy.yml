@@ -1,0 +1,31 @@
+eazyVersion: '1.0'
+name: 'eazy-scala-test-api'
+releases:
+  - 'latest'
+  - '0.0.1'
+image: 'shibbybird/eazy-scala-test-api'
+build:
+  buildEnvironment: 'sbt'
+  image: 'hseeberger/scala-sbt:8u212_1.2.8_2.12.8'
+  command:
+    - '/bin/sh'
+    - '-c'
+    - 'sbt assembly'
+deployment:
+  env:
+    - 'APP_ENV=integration'
+  ports:
+    - 8080
+  health:
+    - '/bin/sh'
+    - '-c'
+    - 'while ! curl http://eazy-scala-test-api:8080/users; do sleep 1; done;'
+integration:
+  runTest:
+    - '/bin/sh'
+    - '-c'
+    - 'sbt test'
+  dependencies:
+    - 'github.com/shibbybird/eazy-kotlin-test-service'
+  peerDependencies:
+    - 'github.com/shibbybird/eazy-ci-kafka'
